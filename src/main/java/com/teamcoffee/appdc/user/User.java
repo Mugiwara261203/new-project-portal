@@ -49,6 +49,9 @@ public class User implements UserDetails {
     @Column(nullable = false)
     private Boolean habilitado = true;
 
+    public User(Integer idUser) {
+    }
+
     @PrePersist
     protected void onCreate(){
         fechaCreacion = LocalDateTime.now();
