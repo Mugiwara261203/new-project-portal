@@ -15,39 +15,43 @@ public class ProfileService {
     @Autowired
     private MedicoRepository medicoRepository;
 
-    public Object updateProfile(Object profile, Integer idUser, String role){
-        if (role.equals("PACIENTE")){
-            Paciente paciente = (Paciente) profile;
-            Optional<Paciente> existing = pacienteRepository.findByUserId(idUser);
-            if (existing.isPresent()){
-                Paciente patientExisting = existing.get();
-                patientExisting.setUsername(paciente.getUsername());
-                patientExisting.setLastname(paciente.getLastname());
-                patientExisting.setDateBirth(paciente.getDateBirth());
-                patientExisting.setAddress(paciente.getAddress());
-                patientExisting.setPhoneNumber(paciente.getPhoneNumber());
-                patientExisting.setTypeDiabetes(paciente.getTypeDiabetes());
-                return pacienteRepository.save(patientExisting);
-            } else {
-                paciente.setUser(new User(idUser));
-                return pacienteRepository.save(paciente);
-            }
-        } else if (role.equals("MEDICO")) {
-            Medico medico = (Medico) profile;
-            Optional<Medico> existing = medicoRepository.findByUserId(idUser);
-            if (existing.isPresent()){
-                Medico medicExisting = existing.get();
-                medicExisting.setUsername(medico.getUsername());
-                medicExisting.setLastname(medico.getLastname());
-                medicExisting.setSpecialization(medico.getSpecialization());
-                medicExisting.setPhoneNumber(medico.getPhoneNumber());
-                return medicoRepository.save(medicExisting);
-            } else {
-                medico.setUser(new User(idUser));
-                return medicoRepository.save(medico);
-            }
-        } else {
-            throw new IllegalArgumentException("Rol de usuario no valido");
-        }
+    public Paciente updatePacienteProfile(Paciente profile, Integer idUser){
+        return pacienteRepository.findByUserId(idUser)
+                .map(existing -> updateExistingPaciente(existing, profile))
+                .orElseGet(() -> saveNewPaciente(profile, idUser));
+    }
+
+    public Medico updateMedicoProfile(Medico profile, Integer idUser){
+        return medicoRepository.findByUserId(idUser)
+                .map(existing -> updateExistingMedico(existing, profile))
+                .orElseGet(() -> saveNewMedico(profile, idUser));
+    }
+
+    private Paciente updateExistingPaciente(Paciente existing, Paciente profile){
+        existing.setUsername(profile.getUsername());
+        existing.setLastname(profile.getLastname());
+        existing.setDateBirth(profile.getDateBirth());
+        existing.setAddress(profile.getAddress());
+        existing.setPhoneNumber(profile.getPhoneNumber());
+        existing.setTypeDiabetes(profile.getTypeDiabetes());
+        return pacienteRepository.save(existing);
+    }
+
+    private Paciente saveNewPaciente(Paciente profile, Integer idUser){
+        profile.setUser(new User(idUser));
+        return pacienteRepository.save(profile);
+    }
+
+    private Medico updateExistingMedico(Medico existing, Medico profile){
+        existing.setUsername(profile.getUsername());
+        existing.setLastname(profile.getLastname());
+        existing.setSpecialization(profile.getSpecialization());
+        existing.setPhoneNumber(profile.getPhoneNumber());
+        return medicoRepository.save(existing);
+    }
+
+    private Medico saveNewMedico(Medico profile, Integer idUser){
+        profile.setUser(new User(idUser));
+        return medicoRepository.save(profile);
     }
 }

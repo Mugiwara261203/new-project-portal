@@ -10,9 +10,15 @@ public class ProfileController {
     @Autowired
     private ProfileService profileService;
 
-    @PutMapping("/update/{idUser}")
-    public ResponseEntity<?> updateProfile(@PathVariable Integer idUser, @RequestBody Object perfil, @RequestParam String role){
-        Object result = profileService.updateProfile(perfil, idUser, role);
+    @PutMapping("/update/paciente/{idUser}")
+    public ResponseEntity<?> updatePacienteProfile(@PathVariable Integer idUser, @RequestBody Paciente perfil){
+        Paciente result = profileService.updatePacienteProfile(perfil, idUser);
+        return ResponseEntity.ok(result);
+    }
+
+    @PutMapping("/update/medico/{idUser}")
+    public ResponseEntity<?> updateMedicoProfile(@PathVariable Integer idUser, @RequestBody Medico perfil){
+        Medico result = profileService.updateMedicoProfile(perfil, idUser);
         return ResponseEntity.ok(result);
     }
 }

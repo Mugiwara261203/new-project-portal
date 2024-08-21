@@ -28,18 +28,26 @@ public class JwtAuthenticationFilter extends OncePerRequestFilter {
     protected void doFilterInternal(@NonNull HttpServletRequest request,
                                     @NonNull HttpServletResponse response,
                                     @NonNull FilterChain filterChain) throws ServletException, IOException {
-        final String authHeader = request.getHeader("Authorization");
-        final String jwt;
-        final String userEmail;
-
-        if (authHeader == null ||!authHeader.startsWith("Bearer ")){
+        String requestPath = request.getServletPath();
+        if (requestPath.startsWith("/api/v1/auth")) {
             filterChain.doFilter(request, response);
             return;
         }
-        jwt = authHeader.substring(7);
-        userEmail = jwtService.extractUsername(jwt);
+
+        final String authorizationHeader = request.getHeader("Authorization");
+
+        if (isInvalidAuthorizationHeader(authorizationHeader)){
+            logger.warn("The request does not have a valid token");
+            handleException(response, request, "The request does not have a valid token", HttpServletResponse.SC_UNAUTHORIZED);
+            return;
+        }
+
+        final String jwt = authorizationHeader.substring(7);
+        final String userEmail = jwtService.extractUsername(jwt);
+
         if (userEmail != null && SecurityContextHolder.getContext().getAuthentication() == null){
             UserDetails userDetails = this.userDetailsService.loadUserByUsername(userEmail);
+
             if (jwtService.isTokenValid(jwt, userDetails)){
                 UsernamePasswordAuthenticationToken authToken = new UsernamePasswordAuthenticationToken(
                         userDetails,
@@ -51,5 +59,15 @@ public class JwtAuthenticationFilter extends OncePerRequestFilter {
             }
         }
         filterChain.doFilter(request, response);
+    }
+    private boolean isInvalidAuthorizationHeader(String authorizationHeader){
+        return authorizationHeader == null || !authorizationHeader.startsWith("Bearer ");
+    }
+
+    private void handleException(HttpServletResponse response, HttpServletRequest request,
+                                 String message, int statusCode) throws IOException {
+        response.setStatus(statusCode);
+        response.setContentType("application/json");
+        response.getWriter().write("{\"error\": \"" + message + "\"}");
     }
 }
