@@ -1,4 +1,4 @@
-package com.teamcoffee.appdc.auth;
+package com.teamcoffee.appdc.dto;
 
 import lombok.AllArgsConstructor;
 import lombok.Builder;
@@ -7,13 +7,11 @@ import lombok.NoArgsConstructor;
 
 @Data
 @Builder
-@AllArgsConstructor
 @NoArgsConstructor
+@AllArgsConstructor
 public class RegisterRequest {
     private String username;
-    private String lastname;
+    private String phone;
     private String email;
     private String password;
-    private String role;
-    private boolean habilitado = true;
 }

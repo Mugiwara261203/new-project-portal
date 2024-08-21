@@ -1,4 +1,4 @@
-package com.teamcoffee.appdc.config;
+package com.teamcoffee.appdc.service;
 
 import io.jsonwebtoken.Claims;
 import io.jsonwebtoken.Jwts;
@@ -6,7 +6,6 @@ import io.jsonwebtoken.SignatureAlgorithm;
 import io.jsonwebtoken.io.Decoders;
 import io.jsonwebtoken.security.Keys;
 import org.springframework.beans.factory.annotation.Value;
-import org.springframework.security.core.GrantedAuthority;
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.stereotype.Service;
 
@@ -15,19 +14,17 @@ import java.util.Date;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.function.Function;
-import java.util.stream.Collectors;
 
 @Service
 public class JwtService {
-
     @Value("${application.security.jwt.secret-key}")
-    private String secretKey;
+    private String SECRET_KEY;
 
     @Value("${application.security.jwt.expiration}")
-    private long jwtExpiration;
+    private long EXPIRATION_TIME;
 
     @Value("${application.security.jwt.refresh-token.expiration}")
-    private long refreshExpiration;
+    private long REFRESH_TOKEN_EXPIRATION;
 
     public String extractUsername(String token){
         return extractClaim(token, Claims::getSubject);
@@ -38,20 +35,17 @@ public class JwtService {
         return claimsResolver.apply(claims);
     }
 
-    public String generateToken(UserDetails userDetails){
+    public String generateToken(UserDetails userDetails, String role, Long id){
         Map<String, Object> claims = new HashMap<>();
-        claims.put("roles", userDetails.getAuthorities().stream()
-                        .map(GrantedAuthority::getAuthority)
-                        .collect(Collectors.toList()));
-        return generateToken(claims, userDetails);
+        claims.put("role", role);
+        claims.put("id", id);
+        return buildToken(claims, userDetails, EXPIRATION_TIME);
     }
 
-    public String generateRefreshToken(UserDetails userDetails){
-        return buildToken(new HashMap<>(), userDetails, refreshExpiration);
-    }
-
-    public String generateToken(Map<String, Object> extraClaims, UserDetails userDetails){
-        return buildToken(extraClaims, userDetails, jwtExpiration);
+    public String generateRefreshToken(UserDetails userDetails, Long id){
+        Map<String, Object> claims = new HashMap<>();
+        claims.put("id", id);
+        return buildToken(claims, userDetails, REFRESH_TOKEN_EXPIRATION);
     }
 
     public String buildToken(Map<String, Object> extraClaims, UserDetails userDetails, long expiration){
@@ -88,7 +82,7 @@ public class JwtService {
     }
 
     private Key getSignInKey(){
-        byte[] keyBytes = Decoders.BASE64.decode(secretKey);
+        byte[] keyBytes = Decoders.BASE64.decode(SECRET_KEY);
         return Keys.hmacShaKeyFor(keyBytes);
     }
 }

@@ -1,4 +1,4 @@
-package com.teamcoffee.appdc.auth;
+package com.teamcoffee.appdc.dto;
 
 import lombok.AllArgsConstructor;
 import lombok.Builder;
@@ -7,9 +7,9 @@ import lombok.NoArgsConstructor;
 
 @Data
 @Builder
-@AllArgsConstructor
 @NoArgsConstructor
+@AllArgsConstructor
 public class AuthenticationRequest {
-    private String email;
+    private String username;
     private String password;
 }
