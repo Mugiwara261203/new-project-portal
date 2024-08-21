@@ -32,7 +32,7 @@ public class ProfileService {
                 paciente.setUser(new User(idUser));
                 return pacienteRepository.save(paciente);
             }
-        } else if (role.equals("DOCTOR")) {
+        } else if (role.equals("MEDICO")) {
             Medico medico = (Medico) profile;
             Optional<Medico> existing = medicoRepository.findByUserId(idUser);
             if (existing.isPresent()){
