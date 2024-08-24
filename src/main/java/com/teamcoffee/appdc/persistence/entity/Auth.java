@@ -23,6 +23,7 @@ public class Auth implements UserDetails {
 
     @Id
     @MapsId
+    @OneToOne
     @JoinColumn(name = "user_id")
     private User user;
 
