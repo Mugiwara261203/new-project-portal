@@ -48,7 +48,6 @@ public class AuthService {
         String refreshToken = jwtService.generateRefreshToken(userDetails, user.getId());
 
         return new AuthResponse(accessToken, refreshToken);
-
     }
 
     public AuthResponse authenticate(AuthenticationRequest request) {
@@ -60,6 +59,7 @@ public class AuthService {
 
         User user = userRepository.findByUsername(request.getUsername())
                 .orElseThrow(() -> new RuntimeException("User not found"));
+
         String role = user.getRole().stream().findFirst().get().getName();
         Long userId = user.getId();
 

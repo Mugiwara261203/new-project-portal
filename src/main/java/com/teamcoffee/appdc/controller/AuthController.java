@@ -1,5 +1,6 @@
 package com.teamcoffee.appdc.controller;
 
+import com.teamcoffee.appdc.dto.AuthenticationRequest;
 import com.teamcoffee.appdc.dto.RegisterRequest;
 import com.teamcoffee.appdc.dto.SuccessResponse;
 import com.teamcoffee.appdc.service.AuthService;
@@ -23,8 +24,8 @@ public class AuthController {
     }
 
     @PostMapping("/login")
-    public ResponseEntity<String> login(@RequestBody RegisterRequest request) {
-        String token = authService.login(request);
+    public ResponseEntity<String> login(@RequestBody AuthenticationRequest request) {
+        String token = String.valueOf(authService.authenticate(request));
         return ResponseEntity.ok(token);
     }
 }
