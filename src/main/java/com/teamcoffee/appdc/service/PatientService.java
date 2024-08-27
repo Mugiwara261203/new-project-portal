@@ -2,28 +2,31 @@ package com.teamcoffee.appdc.service;
 
 import com.teamcoffee.appdc.persistence.entity.Patient;
 import com.teamcoffee.appdc.persistence.repository.PatientRepository;
-import org.springframework.beans.factory.annotation.Autowired;
+import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 
+import java.util.List;
+import java.util.Optional;
+
 @Service
+@RequiredArgsConstructor
 public class PatientService {
-    @Autowired
-    private PatientRepository patientRepository;
 
-    public Patient getPatientById(Long id) {
-        return patientRepository.findById(id).orElseThrow(() -> new RuntimeException("Patient not found"));
+    private final PatientRepository patientRepository;
+
+    public List<Patient> findAll(){
+        return patientRepository.findAll();
     }
 
-    public Patient updatePatient(Long id, Patient updatedPatient) {
-        Patient existingPatient = getPatientById(id);
-        existingPatient.setTypeDiabetes(updatedPatient.getTypeDiabetes());
-        existingPatient.setDateBirth(updatedPatient.getDateBirth());
-        existingPatient.setDirection(updatedPatient.getDirection());
-        return patientRepository.save(existingPatient);
+    public Optional<Patient> findById(Long id){
+        return patientRepository.findById(id);
     }
 
-    public void deletePatient(Long id) {
-        Patient existingPatient = getPatientById(id);
-        patientRepository.delete(existingPatient);
+    public Patient save(Patient patient){
+        return patientRepository.save(patient);
+    }
+
+    public void deleteById(Long id){
+        patientRepository.deleteById(id);
     }
 }

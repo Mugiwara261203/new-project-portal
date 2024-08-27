@@ -17,14 +17,15 @@ import java.util.function.Function;
 
 @Service
 public class JwtService {
+
     @Value("${application.security.jwt.secret-key}")
-    private String SECRET_KEY;
+    private String secretKey;
 
     @Value("${application.security.jwt.expiration}")
-    private long EXPIRATION_TIME;
+    private long jwtExpiration;
 
     @Value("${application.security.jwt.refresh-token.expiration}")
-    private long REFRESH_TOKEN_EXPIRATION;
+    private long refreshExpiration;
 
     public String extractUsername(String token){
         return extractClaim(token, Claims::getSubject);
@@ -36,16 +37,13 @@ public class JwtService {
     }
 
     public String generateToken(UserDetails userDetails, String role, Long id){
-        Map<String, Object> claims = new HashMap<>();
-        claims.put("role", role);
-        claims.put("id", id);
-        return buildToken(claims, userDetails, EXPIRATION_TIME);
+        Map<String, Object> claims = Map.of("role", role, "id", id);
+        return buildToken(claims, userDetails, jwtExpiration);
     }
 
     public String generateRefreshToken(UserDetails userDetails, Long id){
-        Map<String, Object> claims = new HashMap<>();
-        claims.put("id", id);
-        return buildToken(claims, userDetails, REFRESH_TOKEN_EXPIRATION);
+        Map<String, Object> claims = Map.of("id", id);
+        return buildToken(claims, userDetails, refreshExpiration);
     }
 
     public String buildToken(Map<String, Object> extraClaims, UserDetails userDetails, long expiration){
@@ -82,7 +80,7 @@ public class JwtService {
     }
 
     private Key getSignInKey(){
-        byte[] keyBytes = Decoders.BASE64.decode(SECRET_KEY);
+        byte[] keyBytes = Decoders.BASE64.decode(secretKey);
         return Keys.hmacShaKeyFor(keyBytes);
     }
 }

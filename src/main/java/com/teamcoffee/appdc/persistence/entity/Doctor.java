@@ -1,19 +1,25 @@
 package com.teamcoffee.appdc.persistence.entity;
 
-import jakarta.persistence.DiscriminatorValue;
-import jakarta.persistence.Entity;
-import jakarta.persistence.Table;
+import jakarta.persistence.*;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 
 @Data
+@Builder
 @NoArgsConstructor
 @AllArgsConstructor
 @Entity
-@DiscriminatorValue("DOCTOR")
-public class Doctor extends User{
+@Table(name = "doctors")
+public class Doctor {
+    @Id
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
+    private Long id;
     private String specialty;
-    private String licenseNumber;
+    private String doctorId;
+
+    @OneToOne
+    @JoinColumn(name = "user_id")
+    private User user;
 }

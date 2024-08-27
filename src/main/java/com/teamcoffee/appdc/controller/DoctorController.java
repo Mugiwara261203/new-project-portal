@@ -2,29 +2,52 @@ package com.teamcoffee.appdc.controller;
 
 import com.teamcoffee.appdc.persistence.entity.Doctor;
 import com.teamcoffee.appdc.service.DoctorService;
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.security.access.prepost.PreAuthorize;
+import lombok.RequiredArgsConstructor;
+import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
+import java.util.List;
+
 @RestController
-@RequestMapping("/api/doctor")
+@RequestMapping("/api/doctors")
+@RequiredArgsConstructor
 public class DoctorController {
-    @Autowired
-    private DoctorService doctorService;
 
+    private final DoctorService doctorService;
+
+    @GetMapping
+    public List<Doctor> getAllDoctors() {
+        return doctorService.findAll();
+    }
     @GetMapping("/{id}")
-    public Doctor getDoctor(@PathVariable Long id) {
-        return doctorService.getDoctorById(id);
+    public ResponseEntity<Doctor> getDoctorById(@PathVariable Long id) {
+        return doctorService.findById(id)
+                .map(ResponseEntity::ok)
+                .orElseGet(() -> ResponseEntity.notFound().build());
     }
-
+    @PostMapping
+    public Doctor createDoctor(@RequestBody Doctor doctor) {
+        return doctorService.save(doctor);
+    }
     @PutMapping("/{id}")
-    @PreAuthorize("hasRole('DOCTOR')")
-    public Doctor updateDoctor(@PathVariable Long id, @RequestBody Doctor doctor) {
-        return doctorService.updateDoctor(id, doctor);
+    public ResponseEntity<Doctor> updateDoctor(@PathVariable Long id,
+                                               @RequestBody Doctor doctorDetails) {
+        return doctorService.findById(id)
+                .map(doctor -> {
+                    doctor.setSpecialty(doctorDetails.getSpecialty());
+                    doctor.setDoctorId(doctorDetails.getDoctorId());
+                    return ResponseEntity.ok(doctorService.save(doctor));
+                })
+                .orElseGet(() -> ResponseEntity.notFound().build());
+    }
+    @DeleteMapping("/{id}")
+    public ResponseEntity<Object> deleteDoctor(@PathVariable Long id) {
+        return doctorService.findById(id)
+                .map(doctor -> {
+                    doctorService.deleteById(id);
+                    return ResponseEntity.noContent().build();
+                })
+                .orElseGet(() -> ResponseEntity.notFound().build());
     }
 
-    @DeleteMapping("/{id}")
-    public void deleteDoctor(@PathVariable Long id) {
-        doctorService.deleteDoctor(id);
-    }
 }

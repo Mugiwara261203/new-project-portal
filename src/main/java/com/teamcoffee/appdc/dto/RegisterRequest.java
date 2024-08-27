@@ -7,11 +7,20 @@ import lombok.NoArgsConstructor;
 
 @Data
 @Builder
-@NoArgsConstructor
 @AllArgsConstructor
+@NoArgsConstructor
 public class RegisterRequest {
-    private String username;
-    private String phone;
+    private String firstname;
+    private String lastname;
     private String email;
     private String password;
+    private String role;
+    private boolean enabled;
+    //for patients
+    private String diabetesType;
+    private String gender;
+    private String birthDate;
+    //for doctors
+    private String specialty;
+    private String doctorId;
 }
