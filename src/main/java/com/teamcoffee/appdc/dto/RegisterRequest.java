@@ -10,10 +10,21 @@ import lombok.NoArgsConstructor;
 @AllArgsConstructor
 @NoArgsConstructor
 public class RegisterRequest {
-    private String firstname;
-    private String lastname;
+    // for user
+    private String username;
+    private String phone;
     private String email;
     private String password;
     private String role;
     private boolean enabled;
+
+    //for patients
+    private String firstname;
+    private String lastname;
+    private String diabetesType;
+    private String gender;
+
+    //for doctors
+    private String specialty;
+    private String doctorId;
 }

@@ -26,10 +26,10 @@ public class User implements UserDetails {
     private Long id;
 
     @Column(nullable = false)
-    private String firstname;
+    private String username;
 
     @Column(nullable = false)
-    private String lastname;
+    private String phone;
 
     @Column(nullable = false, unique = true)
     private String email;
@@ -41,22 +41,22 @@ public class User implements UserDetails {
     private Role role;
 
     @Column(nullable = false, updatable = false)
-    private LocalDateTime fechaCreacion;
+    private LocalDateTime creationDate;
 
     @Column
-    private LocalDateTime fechaActualizacion;
+    private LocalDateTime updateDate;
 
     @Column(nullable = false)
     private Boolean enabled = true;
 
     @PrePersist
     protected void onCreate(){
-        fechaCreacion = LocalDateTime.now();
+        creationDate = LocalDateTime.now();
     }
 
     @PreUpdate
     protected void onUpdate(){
-        fechaActualizacion = LocalDateTime.now();
+        updateDate = LocalDateTime.now();
     }
 
     @Override
@@ -66,7 +66,7 @@ public class User implements UserDetails {
 
     @Override
     public String getUsername() {
-        return "";
+        return email;
     }
 
     @Override

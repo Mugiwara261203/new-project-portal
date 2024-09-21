@@ -37,15 +37,12 @@ public class JwtService {
     }
 
     public String generateToken(UserDetails userDetails, String role, Long id){
-        Map<String, Object> claims = new HashMap<>();
-        claims.put("role", role);
-        claims.put("id", id);
+        Map<String, Object> claims = Map.of("role", role, "id", id);
         return buildToken(claims, userDetails, jwtExpiration);
     }
 
     public String generateRefreshToken(UserDetails userDetails, Long id){
-        Map<String, Object> claims = new HashMap<>();
-        claims.put("id", id);
+        Map<String, Object> claims = Map.of("id", id);
         return buildToken(claims, userDetails, refreshExpiration);
     }
 
